@@ -34,14 +34,12 @@ def main():
         print('Restart the program and enter a value between 1 and 4')
 
 def letgocrawler():
-    firefox_profile = webdriver.FirefoxProfile()
+    PROXY = '31.220.33.13:1212'
+    options = webdriver.ChromeOptions()
+    options.add_argument('--proxy-server=%s' % PROXY)
+    driver = webdriver.Chrome(options=options)
 
-    firefox_profile.set_preference('permissions.default.image', 2)
-    firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
-    driver = webdriver.Firefox(firefox_profile=firefox_profile)
-
-    driver.get(
-        "https://www.letgo.com/en-us/c/cars/page/1?distance=100&latitude=30.267153000000015&longitude=-97.7430608")
+    driver.get("https://www.letgo.com/en-us/c/cars/page/1?distance=100&latitude=30.267153000000015&longitude=-97.7430608")
 
     timeout = 2
     try:
@@ -235,11 +233,10 @@ def letgocrawler():
 
 
 def offerupcrawler():
-    firefox_profile = webdriver.FirefoxProfile()
-    firefox_profile.set_preference('permissions.default.image', 2)
-    firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
-
-    driver = webdriver.Firefox(firefox_profile=firefox_profile)
+    PROXY = '31.220.33.13:1212'
+    options = webdriver.ChromeOptions()
+    options.add_argument('--proxy-server=%s' % PROXY)
+    driver = webdriver.Chrome(options=options)
 
     driver.get("https://offerup.com/explore/sck/tx/austin/cars-trucks/")
 
@@ -429,11 +426,10 @@ def offerupcrawler():
 
 
 def craigscrawler():
-    firefox_profile = webdriver.FirefoxProfile()
-    firefox_profile.set_preference('permissions.default.image', 2)
-    firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
-
-    driver = webdriver.Firefox(firefox_profile=firefox_profile)
+    PROXY = '31.220.33.13:1212'
+    options = webdriver.ChromeOptions()
+    options.add_argument('--proxy-server=%s' % PROXY)
+    driver = webdriver.Chrome(options=options)
 
     driver.get("https://austin.craigslist.org/d/cars-trucks/search/cta")
 
@@ -604,131 +600,43 @@ def craigscrawler():
 
 
 def facebookcrawler():
-    todays_date = datetime.now().strftime("%B_%d_%Y")
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-    # create a file handler
-    handler = logging.FileHandler('Scrapper.log')
-    handler.setLevel(logging.INFO)
-    # create a logging format
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    def get_driver(proxy=None):
-        path = os.path.dirname(os.path.abspath(__file__))
-        logger.info("In driver Function")
-        if proxy:
-            chrome_options = webdriver.ChromeOptions()
-            prefs = {"profile.managed_default_content_settings.images": 2}
-            chrome_options.add_experimental_option("prefs", prefs)
-            chrome_options.binary_location = 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
-            proxy_values = proxy.replace("\n", "")
-            proxy_values = proxy_values.split(":")
-            # print(proxy_values)
-            manifest_json = """
-                    {
-                        "version": "1.0.0",
-                        "manifest_version": 2,
-                        "name": "Chrome Proxy",
-                        "permissions": [
-                            "proxy",
-                            "tabs",
-                            "unlimitedStorage",
-                            "storage",
-                            "<all_urls>",
-                            "webRequest",
-                            "webRequestBlocking"
-                        ],
-                        "background": {
-                            "scripts": ["background.js"]
-                        },
-                        "minimum_chrome_version":"22.0.0"
-                    }
-                    """
-            background_js = """
-                    var config = {
-                            mode: "fixed_servers",
-                            rules: {
-                              singleProxy: {
-                                scheme: "http",
-                                host: "%s",
-                                port: parseInt(%s)
-                              },
-                              bypassList: ["localhost"]
-                            }
-                          };
+    PROXY = '31.220.33.13:1212'
+    options = webdriver.ChromeOptions()
+    options.add_argument('--proxy-server=%s' % PROXY)
+    driver = webdriver.Chrome(options=options)
 
-                    chrome.proxy.settings.set({value: config, scope: "regular"}, function() {});
+    driver.get("https://www.facebook.com/marketplace/108276955864187/vehicles/?sort=CREATION_TIME_DESCEND")
 
-                    function callbackFn(details) {
-                        return {
-                            authCredentials: {
-                                username: "%s",
-                                password: "%s"
-                            }
-                        };
-                    }
+    timeout = 4
+    try:
+        element_present = EC.presence_of_element_located((By.ID, 'main'))
+        WebDriverWait(driver, timeout).until(element_present)
+    except TimeoutException:
+        print("Timed out waiting for page to load")
+    finally:
+        print("Page loaded")
 
-                    chrome.webRequest.onAuthRequired.addListener(
-                                callbackFn,
-                                {urls: ["<all_urls>"]},
-                                ['blocking']
-                    );
-                    """ % (proxy_values[0], proxy_values[1], proxy_values[2], proxy_values[3])
-            pluginfile = 'proxy_auth_plugin.zip'
+    urla = []
 
-            with zipfile.ZipFile(pluginfile, 'w') as zp:
-                zp.writestr("manifest.json", manifest_json)
-                zp.writestr("background.js", background_js)
-            chrome_options.add_extension(pluginfile)
-            driver = webdriver.Chrome(options=chrome_options)
-        else:
-            chrome_options = webdriver.ChromeOptions()
-            chrome_options.binary_location = 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe'
-            driver = webdriver.Chrome(options=chrome_options)
-        driver.implicitly_wait(0)  # seconds
-        driver.set_window_size(1920, 1080)
-        driver.set_window_position(0, 0)
-        # print("Returning Driver")
-        logger.info("Returning Driver from Driver Function")
-
-        return driver
-
-    if __name__ == '__main__':
-        logger.info("Script has Started")
-        proxy_list = ['190.112.203.245:1212:user-60169:scrap!@#1Z', '200.35.154.67:1212:user-60169:scrap!@#1Z',
-                      '200.35.154.151:1212:user-60169:scrap!@#1Z', '190.112.192.0:1212:user-60169:scrap!@#1Z',
-                      '50.117.102.129:1212:user-60169:scrap!@#1Z', '190.112.203.235:1212:user-60169:scrap!@#1Z',
-                      '50.117.102.75:1212:user-60169:scrap!@#1Z', '190.112.195.153:1212:user-60169:scrap!@#1Z',
-                      '50.117.102.229:1212:user-60169:scrap!@#1Z', '50.117.102.116:1212:user-60169:scrap!@#1Z',
-                      '190.112.201.194:1212:user-60169:scrap!@#1Z', '50.117.102.91:1212:user-60169:scrap!@#1Z']
-
-        proxy = proxy_list[randint(0, len(proxy_list) - 1)]
-        driver = get_driver(proxy=proxy)
-
-        driver.get("https://www.facebook.com/marketplace/108276955864187/vehicles/?sort=CREATION_TIME_DESCEND")
-
-        timeout = 4
+    for i in range(30):
         try:
-            element_present = EC.presence_of_element_located((By.ID, 'main'))
-            WebDriverWait(driver, timeout).until(element_present)
-        except TimeoutException:
-            print("Timed out waiting for page to load")
-        finally:
-            print("Page loaded")
+            button = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[3]/div/div/div[' + str(
+                    i + 1) + ']/div/span/div/a')
+            urla.append(button.get_attribute('href'))
 
-        urla = []
-
-        for i in range(10):
+        except:
+            time.sleep(5)
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             try:
                 button = driver.find_element_by_xpath(
                     '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[3]/div/div/div[' + str(
                         i + 1) + ']/div/span/div/a')
                 urla.append(button.get_attribute('href'))
-
+                print("EX")
             except:
-                time.sleep(5)
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(10)
                 try:
                     button = driver.find_element_by_xpath(
                         '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[3]/div/div/div[' + str(
@@ -736,200 +644,182 @@ def facebookcrawler():
                     urla.append(button.get_attribute('href'))
                     print("EX")
                 except:
-                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(10)
-                    try:
-                        button = driver.find_element_by_xpath(
-                            '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[3]/div/div/div[' + str(
-                                i + 1) + ']/div/span/div/a')
-                        urla.append(button.get_attribute('href'))
-                        print("EX")
-                    except:
-                        c = 0
+                    c = 0
 
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-        print("Complete")
+    print("Complete")
 
-        print(len(urla))
+    print(len(urla))
 
-        with open('facebook.csv', 'a', newline='') as fil:
+    with open('facebook.csv', 'a', newline='') as fil:
+        e = csv.writer(fil, delimiter=',')
+        e.writerows([['NO', 'Item URL', 'Seller', 'Price', 'Title', 'Location', 'Make', 'Model', 'Year',
+                      'Car Description', 'Condition', 'Posted Date', 'Seller Full Address', 'Seller phone number',
+                      'Seller Website', 'Seller Description', 'Opens at', 'Images']])
+    linkno = len(urla)
+    print(linkno)
+    for k in range(linkno):
+
+        url = urla[k]
+        driver.get(url)
+
+        timeout = 2
+
+        try:
+            element_present = EC.presence_of_element_located((By.ID, 'main'))
+            WebDriverWait(driver, timeout).until(element_present)
+        except TimeoutException:
+            print(".")
+        finally:
+            print("Page loaded")
+
+        row = []
+        row.append(k + 1)
+        row.append(url)
+        new = 0
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[7]/div[2]/div[2]/div/div/div[2]/div/div/div/div/span/span')
+            if code_soup:
+                row.append(code_soup.text)
+
+        except:
+            row.append("")
+            new = new + 1
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[1]/span')
+            if code_soup:
+                row.append(code_soup.text)
+
+        except:
+            row.append("")
+            new = new + 1
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/span')
+            if code_soup:
+                row.append(code_soup.text)
+
+        except:
+            row.append("")
+            new = new + 1
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[2]/div/span/a/span')
+            if code_soup:
+                row.append(code_soup.text)
+                location = code_soup.text
+        except:
+            row.append("")
+            new = new + 1
+
+        row.append("")
+
+        row.append("")
+
+        row.append("")
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div')
+            if code_soup:
+                body1 = code_soup.text
+                row.append(code_soup.text)
+        except:
+            row.append("")
+            new = new + 1
+
+        row.append("")
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[2]/div/span')
+            if code_soup:
+                row.append(code_soup.text)
+        except:
+            row.append("")
+            new = new + 1
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[2]/div/div/div[2]/div/div/div/div[2]/span/span/span')
+            if code_soup:
+                row.append(code_soup.text)
+        except:
+            row.append("")
+            new = new + 1
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[3]/div/div/div[2]/div/div/div/div/span/span')
+            if code_soup:
+                row.append(code_soup.text)
+        except:
+            row.append("")
+            new = new + 1
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[4]/div/div/div[2]/div/div/div/div/span/span/a')
+            if code_soup:
+                row.append(code_soup.text)
+        except:
+            row.append("")
+            new = new + 1
+
+        try:
+            driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div/div/div/span/div/span').click()
+
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div/div/div/span')
+            if code_soup:
+                row.append(code_soup.text)
+        except:
+            row.append("")
+            new = new + 1
+
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[5]/div/div/div[2]/div/div/div/div[1]/span/span')
+
+            if code_soup:
+                row.append(code_soup.text)
+        except:
+            row.append("")
+            new = new + 1
+
+        image = ""
+
+        for q in range(24):
+            try:
+                code_soup = driver.find_element_by_xpath(
+                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[1]/div/div[3]/div/div[' + str(
+                        q + 1) + ']/div/div/img')
+                if code_soup:
+                    code_soup = code_soup.get_attribute('src')
+                    image = image + code_soup + ", "
+            except:
+                xq = 0
+
+        row.append(image)
+
+        try:
+            now = datetime.now()
+            date = now.strftime("%Y-%m-%d %H:%M:%S")
+            row.append(date)
+        except:
+            row.append("")
+
+        print(row)
+
+        with open('facebook.csv', 'a', newline='', encoding="utf-8") as fil:
             e = csv.writer(fil, delimiter=',')
-            e.writerows([['NO', 'Item URL', 'Seller', 'Price', 'Title', 'Location', 'Make', 'Model', 'Year',
-                          'Car Description', 'Condition', 'Posted Date', 'Seller Full Address', 'Seller phone number',
-                          'Seller Website', 'Seller Description', 'Opens at', 'Images']])
-        linkno = len(urla)
-        print(linkno)
-        for k in range(linkno):
-
-            url = urla[k]
-            try:
-                driver.get(url)
-            except:
-                proxy = proxy_list[randint(0, len(proxy_list) - 1)]
-                driver = get_driver(proxy=proxy)
-
-            timeout = 2
-
-            try:
-                element_present = EC.presence_of_element_located((By.ID, 'main'))
-                WebDriverWait(driver, timeout).until(element_present)
-            except TimeoutException:
-                print(".")
-            finally:
-                print("Page loaded")
-
-            row = []
-            row.append(k + 1)
-            row.append(url)
-            new = 0
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[7]/div[2]/div[2]/div/div/div[2]/div/div/div/div/span/span')
-                if code_soup:
-                    row.append(code_soup.text)
-
-            except:
-                row.append("")
-                new = new + 1
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[1]/span')
-                if code_soup:
-                    row.append(code_soup.text)
-
-            except:
-                row.append("")
-                new = new + 1
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/span')
-                if code_soup:
-                    row.append(code_soup.text)
-
-            except:
-                row.append("")
-                new = new + 1
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[2]/div/span/a/span')
-                if code_soup:
-                    row.append(code_soup.text)
-                    location = code_soup.text
-            except:
-                row.append("")
-                new = new + 1
-
-            row.append("")
-
-            row.append("")
-
-            row.append("")
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div')
-                if code_soup:
-                    body1 = code_soup.text
-                    row.append(code_soup.text)
-            except:
-                row.append("")
-                new = new + 1
-
-            row.append("")
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[2]/div/span')
-                if code_soup:
-                    row.append(code_soup.text)
-            except:
-                row.append("")
-                new = new + 1
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[2]/div/div/div[2]/div/div/div/div[2]/span/span/span')
-                if code_soup:
-                    row.append(code_soup.text)
-            except:
-                row.append("")
-                new = new + 1
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[3]/div/div/div[2]/div/div/div/div/span/span')
-                if code_soup:
-                    row.append(code_soup.text)
-            except:
-                row.append("")
-                new = new + 1
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[4]/div/div/div[2]/div/div/div/div/span/span/a')
-                if code_soup:
-                    row.append(code_soup.text)
-            except:
-                row.append("")
-                new = new + 1
-
-            try:
-                driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div/div/div/span/div/span').click()
-
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div/div/div/span')
-                if code_soup:
-                    row.append(code_soup.text)
-            except:
-                row.append("")
-                new = new + 1
-
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[5]/div/div/div[2]/div/div/div/div[1]/span/span')
-
-                if code_soup:
-                    row.append(code_soup.text)
-            except:
-                row.append("")
-                new = new + 1
-
-            image = ""
-            if new > 9:
-                proxy = proxy_list[randint(0, len(proxy_list) - 1)]
-                driver = get_driver(proxy=proxy)
-                continue
-
-            for q in range(24):
-                try:
-                    code_soup = driver.find_element_by_xpath(
-                        '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[1]/div/div[3]/div/div[' + str(
-                            q + 1) + ']/div/div/img')
-                    if code_soup:
-                        code_soup = code_soup.get_attribute('src')
-                        image = image + code_soup + ", "
-                except:
-                    xq = 0
-
-            row.append(image)
-
-            try:
-                now = datetime.now()
-                date = now.strftime("%Y-%m-%d %H:%M:%S")
-                row.append(date)
-            except:
-                row.append("")
-
-            print(row)
-
-            with open('facebook.csv', 'a', newline='', encoding="utf-8") as fil:
-                e = csv.writer(fil, delimiter=',')
-                e.writerows([row])
-            driver.close()
+            e.writerows([row])
 
 main()
