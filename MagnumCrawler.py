@@ -235,6 +235,9 @@ def offerupcrawler():
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://offerup.com/explore/sck/tx/austin/cars-trucks/")
@@ -428,6 +431,9 @@ def craigscrawler():
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://austin.craigslist.org/d/cars-trucks/search/cta")
@@ -602,6 +608,9 @@ def facebookcrawler():
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://www.facebook.com/marketplace/108276955864187/vehicles/?sort=CREATION_TIME_DESCEND")
