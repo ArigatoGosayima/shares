@@ -33,6 +33,9 @@ def letgocrawler():
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://www.letgo.com/en-us/c/cars/page/1?distance=100&latitude=30.267153000000015&longitude=-97.7430608")
