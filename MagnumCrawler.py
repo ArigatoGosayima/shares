@@ -6,12 +6,8 @@ from selenium.webdriver.common.by import By
 
 import csv
 from datetime import datetime
-import os
 import re
 import time
-from random import randint
-import logging
-import zipfile
 
 
 def main():
@@ -34,7 +30,7 @@ def main():
         print('Restart the program and enter a value between 1 and 4')
 
 def letgocrawler():
-    PROXY = '31.220.33.13:1212'
+    PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
     driver = webdriver.Chrome(options=options)
@@ -233,7 +229,7 @@ def letgocrawler():
 
 
 def offerupcrawler():
-    PROXY = '31.220.33.13:1212'
+    PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
     driver = webdriver.Chrome(options=options)
@@ -426,7 +422,7 @@ def offerupcrawler():
 
 
 def craigscrawler():
-    PROXY = '31.220.33.13:1212'
+    PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
     driver = webdriver.Chrome(options=options)
@@ -600,7 +596,7 @@ def craigscrawler():
 
 
 def facebookcrawler():
-    PROXY = '31.220.33.13:1212'
+    PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument('--proxy-server=%s' % PROXY)
     driver = webdriver.Chrome(options=options)
