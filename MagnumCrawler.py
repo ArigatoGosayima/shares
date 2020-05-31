@@ -1,3 +1,5 @@
+from random import randrange
+
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -19,35 +21,58 @@ def main():
     site = input()
     site = int(site)
     if site == 1:
-        facebookcrawler()
+        maxim = input('How many pages do you want to scrape: ')
+        facebookcrawler(maxim)
     elif site == 2:
-        craigscrawler()
+        maxim = input('How many pages do you want to scrape: ')
+        craigscrawler(maxim)
     elif site == 3:
-        offerupcrawler()
+        maxim = input('How many pages in multiples of 3 do you want to scrape: ')
+        offerupcrawler(maxim)
     elif site == 4:
-        letgocrawler()
+        maxim = input('How many pages in multiples of 40 do you want to scrape: ')
+        letgocrawler(maxim)
     else:
         print('Restart the program and enter a value between 1 and 4')
 
-def letgocrawler():
-    PROXY = '190.112.194.246:1212'
+def letgocrawler(maxim):
+    pcounter = 0
+    counter = 0
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+    with open('magnumproxylist.txt', 'r', encoding='UTF-8') as f:
+        for line in f:
+            pcounter += 1
+    with open('main.txt', 'r', encoding='UTF-8') as f:
+        for line in f:
+            counter += 1
+    ai = randrange(0, counter)
+    with open('main.txt', 'r', encoding='UTF-8') as proxylist:
+        for i, line in enumerate(proxylist):
+            if i == ai:
+                PROXY = line
+            else:
+                pass
+    print('MAIN PROXY: ' + PROXY)
+    PROXY = '190.112.195.153:1212'
     options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless')
+    options.add_argument('--headless');
+    options.add_argument('--disable-gpu');
+    options.add_argument(f'user-agent={user_agent}')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://www.letgo.com/en-us/c/cars/page/1?distance=100&latitude=30.267153000000015&longitude=-97.7430608")
 
-    timeout = 2
+    timeout = 6
     try:
-        element_present = EC.presence_of_element_located((By.ID, 'main'))
+        element_present = EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/main/div[2]/header/div/div[4]/button'))
         WebDriverWait(driver, timeout).until(element_present)
+        print("Page loaded")
     except TimeoutException:
         print("Timed out waiting for page to load")
-    finally:
-        print("Page loaded")
 
     with open('letgo.csv', 'a', newline='') as fil:
         e = csv.writer(fil, delimiter=',')
@@ -58,22 +83,21 @@ def letgocrawler():
 
     sn = 0
 
-    for l in range(120):
+    for l in range(int(maxim) + 1):
         try:
             driver.get('https://www.letgo.com/en-us/c/cars/page/' + str(
                 l + 1) + '?distance=100&latitude=30.267153000000015&longitude=-97.7430608')
         except:
             continue
 
-        timeout = 3
+        timeout = 6
         try:
-            element_present = EC.presence_of_element_located((By.ID, 'main'))
+            element_present = EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/main/div[2]/header/div/div[4]/button'))
             WebDriverWait(driver, timeout).until(element_present)
+            print("Page loaded")
         except TimeoutException:
             print("Timed out waiting for page to load")
-        finally:
-            print("Page loaded")
-
+            continue
         pageList = []
         for page in range(40):
             try:
@@ -83,24 +107,41 @@ def letgocrawler():
                 pageList.append(button.get_attribute('href'))
             except:
                 continue
-
+        print(len(pageList))
         for k in range(len(pageList)):
-
+            a = randrange(0, pcounter)
+            with open('magnumproxylist.txt', 'r', encoding='UTF-8') as proxylist:
+                for i, line in enumerate(proxylist):
+                    if i == a:
+                        PROXY = line
+                    else:
+                        pass
+            print('On a proxy: ' + PROXY)
+            options = webdriver.ChromeOptions()
+            options.add_argument('--proxy-server=%s' % PROXY)
+            #options.add_argument('--headless');
+            options.add_argument('--disable-gpu');
+            options.add_argument(f'user-agent={user_agent}')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            driver1 = webdriver.Chrome(options=options)
             url = pageList[k]
             try:
-                driver.get(url)
+                driver1.get(url)
             except:
                 c = 0
 
             timeout = 2
 
             try:
-                element_present = EC.presence_of_element_located((By.ID, 'main'))
-                WebDriverWait(driver, timeout).until(element_present)
-            except TimeoutException:
-                print("Timed out waiting for page to load")
-            finally:
+                element_present = EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/main/div[1]/header/div/div[1]/a'))
+                WebDriverWait(driver1, timeout).until(element_present)
                 print("Page loaded")
+            except TimeoutException:
+                driver1.save_screenshot('a.png')
+                print("Timed out waiting for page to load")
+                driver1.close()
+                continue
 
             row = []
             sn = sn + 1
@@ -108,7 +149,7 @@ def letgocrawler():
             row.append(url)
 
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '/html/body/div/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[3]/div/section/div[1]/div/div/div/div[1]/div/div[2]/p')
                 if code_soup:
                     row.append(code_soup.text)
@@ -117,7 +158,7 @@ def letgocrawler():
 
             try:
 
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '/html/body/div/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[1]/div[1]/div/span')
                 if code_soup:
                     row.append(code_soup.text)
@@ -125,7 +166,7 @@ def letgocrawler():
                 row.append("$0")
 
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '/html/body/div/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[2]/h1')
                 if code_soup:
                     row.append(code_soup.text)
@@ -133,7 +174,7 @@ def letgocrawler():
                 row.append("")
 
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '/html/body/div/main/div[2]/div[1]/div[3]/div/div[2]/div[1]/div[1]/img')
                 if code_soup:
                     code_soup = code_soup.get_attribute('src')
@@ -143,21 +184,21 @@ def letgocrawler():
                 row.append("")
 
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '//*[@id="app"]/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[4]/div/div[3]/div[1]/a')
                 if code_soup:
                     row.append(code_soup.text)
             except:
                 row.append("")
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '//*[@id="app"]/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[4]/div/div[3]/div[2]/a')
                 if code_soup:
                     row.append(code_soup.text)
             except:
                 row.append("")
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '//*[@id="app"]/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[4]/div/div[3]/div[3]/a')
                 if code_soup:
                     row.append(code_soup.text)
@@ -165,7 +206,7 @@ def letgocrawler():
                 row.append("")
 
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '//*[@id="app"]/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[4]/div/div[5]/p')
                 if code_soup:
                     body1 = code_soup.text
@@ -175,17 +216,14 @@ def letgocrawler():
             row.append("")
 
             try:
-                code_soup = driver.find_element_by_xpath(
+                code_soup = driver1.find_element_by_xpath(
                     '/html/body/div/main/div[2]/div[1]/div[2]/div[3]/div[2]/div/div[4]/div/div[1]/div[1]/span/span')
                 if code_soup:
                     row.append(code_soup.text)
             except:
                 row.append("")
 
-            try:
-                row.append(location)
-            except:
-                row.append("")
+            row.append("")#location is empty
 
             try:
                 regex = "(\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4})"
@@ -206,7 +244,7 @@ def letgocrawler():
 
             for q in range(24):
                 try:
-                    code_soup = driver.find_element_by_xpath(
+                    code_soup = driver1.find_element_by_xpath(
                         '/html/body/div/main/div[2]/div[1]/div[2]/div[3]/div[1]/div/div[1]/div/div[1]/ul/li[' + str(
                             q + 1) + ']')
                     if code_soup:
@@ -229,45 +267,56 @@ def letgocrawler():
             with open('letgo.csv', 'a', newline='', encoding="utf-8") as fil:
                 e = csv.writer(fil, delimiter=',')
                 e.writerows([row])
+                print(row)
+            driver1.close()
 
 
-def offerupcrawler():
+def offerupcrawler(maxim):
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless')
+    options.add_argument('--headless');
+    options.add_argument('--disable-gpu');
+    options.add_argument(f'user-agent={user_agent}')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
-
     driver.get("https://offerup.com/explore/sck/tx/austin/cars-trucks/")
 
-    timeout = 2
+    timeout = 6
     try:
-        element_present = EC.presence_of_element_located((By.ID, 'main'))
+        element_present = EC.presence_of_element_located((By.XPATH, '/html/body'))
         WebDriverWait(driver, timeout).until(element_present)
-    except TimeoutException:
-        print("Timed out waiting for page to load")
-    finally:
         print("Page loaded")
-
-    driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div[2]/div[2]/div[3]/button').click()
-    time.sleep(5)
-
+    except TimeoutException:
+        time.sleep(6)
+        try:
+            element_present = EC.presence_of_element_located((By.XPATH, '/html/body'))
+            WebDriverWait(driver, timeout).until(element_present)
+            print("Page loaded")
+        except:
+            print("Timed out waiting for page to load")
+            driver.close()
+    time.sleep(6)
     urlarray = []
-
-    for i in range(800):
+    if int(maxim) <= 4:
+        calc = int(maxim)
+    else:
+        calc = int(maxim) - int(maxim) % 4
+    for i in range(calc):
         for j in range(4):
 
             try:
                 button = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[' + str(j + 1) + ']/a[' + str(i + 1) + ']')
+                    '//*[@id="db-item-list"]/div[' + str(j + 1) + ']/a[' + str(i + 1) + ']')
                 urlarray.append(button.get_attribute('href'))
             except:
-                time.sleep(15)
+                time.sleep(5)
                 try:
                     button = driver.find_element_by_xpath(
-                        '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[' + str(j + 1) + ']/a[' + str(
+                        '//*[@id="db-item-list"]/div[' + str(j + 1) + ']/a[' + str(
                             i + 1) + ']')
                     urlarray.append(button.get_attribute('href'))
                     print("EX")
@@ -276,14 +325,14 @@ def offerupcrawler():
                     time.sleep(5)
                     try:
                         button = driver.find_element_by_xpath(
-                            '/html/body/div[1]/div/div[2]/div[2]/div[2]/div[2]/div[' + str(j + 1) + ']/a[' + str(
+                            '//*[@id="db-item-list"]/div[' + str(j + 1) + ']/a[' + str(
                                 i + 1) + ']')
                         urlarray.append(button.get_attribute('href'))
                         print("EX")
 
                     except:
                         i = 4000000
-                        break
+                        continue
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
@@ -308,12 +357,12 @@ def offerupcrawler():
         timeout = 2
 
         try:
-            element_present = EC.presence_of_element_located((By.ID, 'main'))
+            element_present = EC.presence_of_element_located((By.XPATH, '/html/body'))
             WebDriverWait(driver, timeout).until(element_present)
-        except TimeoutException:
-            print(".")
-        finally:
             print("Page loaded")
+        except TimeoutException:
+            print("Check your internet speed")
+            continue
 
         row = []
         row.append(k + 1)
@@ -427,11 +476,15 @@ def offerupcrawler():
             e.writerows([row])
 
 
-def craigscrawler():
+def craigscrawler(maxim):
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless')
+    options.add_argument('--headless');
+    options.add_argument('--disable-gpu');
+    options.add_argument(f'user-agent={user_agent}')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -457,7 +510,7 @@ def craigscrawler():
                       'Car Description', 'Condition', 'Posted Date', 'Seller Full Address', 'Seller phone number',
                       'Seller Website', 'Seller Description', 'Opens at', 'Images']])
 
-    for k in range(1, 10):
+    for k in range(1, int(maxim) + 1):
         try:
             driver.get(url)
         except:
@@ -473,7 +526,7 @@ def craigscrawler():
             print("Page loaded")
 
         try:
-            code_soup = driver.find_element_by_xpath('/html/body/section/section/header/div[2]/div/button').click()
+            driver.find_element_by_xpath('/html/body/section/section/header/div[2]/div/button').click()
             timeout = 1
             try:
                 element_present = EC.presence_of_element_located((By.ID, 'main'))
@@ -604,55 +657,60 @@ def craigscrawler():
         url = button.get_attribute('href')
 
 
-def facebookcrawler():
+def facebookcrawler(maxim):
+    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
-    options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless')
+    options.add_argument("--start-maximized")
+    #options.add_argument('--proxy-server=%s' % PROXY)
+    #options.add_argument('--headless');
+    options.add_argument('--disable-gpu');
+    options.add_argument(f'user-agent={user_agent}')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
 
     driver.get("https://www.facebook.com/marketplace/108276955864187/vehicles/?sort=CREATION_TIME_DESCEND")
-
-    timeout = 4
+    timeout = 7
+    #time.sleep(1000)
     try:
-        element_present = EC.presence_of_element_located((By.ID, 'main'))
+        element_present = EC.presence_of_element_located((By.ID, 'js_1'))
         WebDriverWait(driver, timeout).until(element_present)
-    except TimeoutException:
-        print("Timed out waiting for page to load")
-    finally:
         print("Page loaded")
+    except TimeoutException:
+        driver.save_screenshot('b.png')
+        print("Timed out waiting for page to load")
 
     urla = []
 
-    for i in range(30):
+    for i in range(int(maxim)):
         try:
+            print('i tried')
             button = driver.find_element_by_xpath(
-                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[3]/div/div/div[' + str(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div[' + str(
                     i + 1) + ']/div/span/div/a')
             urla.append(button.get_attribute('href'))
-
         except:
-            time.sleep(5)
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(5)
             try:
                 button = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[3]/div/div/div[' + str(
+                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div[' + str(
                         i + 1) + ']/div/span/div/a')
                 urla.append(button.get_attribute('href'))
                 print("EX")
             except:
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(10)
+                time.sleep(5)
                 try:
                     button = driver.find_element_by_xpath(
-                        '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[3]/div/div/div[' + str(
+                        '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div[2]/div/div[2]/div[' + str(
                             i + 1) + ']/div/span/div/a')
                     urla.append(button.get_attribute('href'))
                     print("EX")
                 except:
                     c = 0
+                    break
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
@@ -668,19 +726,19 @@ def facebookcrawler():
     linkno = len(urla)
     print(linkno)
     for k in range(linkno):
-
         url = urla[k]
         driver.get(url)
-
+        driver.save_screenshot('a.png')
         timeout = 2
 
         try:
-            element_present = EC.presence_of_element_located((By.ID, 'main'))
+            element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
             WebDriverWait(driver, timeout).until(element_present)
-        except TimeoutException:
-            print(".")
-        finally:
             print("Page loaded")
+        except TimeoutException:
+            print("Didnt load")
+            continue
+
 
         row = []
         row.append(k + 1)
