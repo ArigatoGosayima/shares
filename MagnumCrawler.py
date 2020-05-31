@@ -38,7 +38,6 @@ def main():
 def letgocrawler(maxim):
     pcounter = 0
     counter = 0
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     with open('magnumproxylist.txt', 'r', encoding='UTF-8') as f:
         for line in f:
             pcounter += 1
@@ -59,7 +58,7 @@ def letgocrawler(maxim):
     options.add_argument('--proxy-server=%s' % PROXY)
     options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=%s' %user_agent)
+    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -121,7 +120,7 @@ def letgocrawler(maxim):
             options.add_argument('--proxy-server=%s' % PROXY)
             #options.add_argument('--headless');
             options.add_argument('--disable-gpu');
-            options.add_argument(f'user-agent=' + user_agent)
+            options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
             driver1 = webdriver.Chrome(options=options)
@@ -272,14 +271,13 @@ def letgocrawler(maxim):
 
 
 def offerupcrawler(maxim):
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
     options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=%s' % user_agent)
+    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -477,14 +475,13 @@ def offerupcrawler(maxim):
 
 
 def craigscrawler(maxim):
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
     options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=%s' % user_agent)
+    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -658,14 +655,13 @@ def craigscrawler(maxim):
 
 
 def facebookcrawler(maxim):
-    user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
     PROXY = '190.112.194.246:1212'
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
     options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=%s' % user_agent)
+    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -728,7 +724,6 @@ def facebookcrawler(maxim):
     for k in range(linkno):
         url = urla[k]
         driver.get(url)
-        driver.save_screenshot('a.png')
         timeout = 2
 
         try:
