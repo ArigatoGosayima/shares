@@ -767,7 +767,7 @@ def facebookcrawler(maxim):
     cat = BeautifulSoup(cat)
     n = 0
 
-  for link in cat.find_all('a'):
+    for link in cat.find_all('a'):
         if n == 0:
             n += 1
             continue
