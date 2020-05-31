@@ -59,7 +59,7 @@ def letgocrawler(maxim):
     options.add_argument('--proxy-server=%s' % PROXY)
     options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument(f'user-agent=' + user_agent)
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -121,7 +121,7 @@ def letgocrawler(maxim):
             options.add_argument('--proxy-server=%s' % PROXY)
             #options.add_argument('--headless');
             options.add_argument('--disable-gpu');
-            options.add_argument(f'user-agent={user_agent}')
+            options.add_argument(f'user-agent=' + user_agent)
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
             driver1 = webdriver.Chrome(options=options)
@@ -279,7 +279,7 @@ def offerupcrawler(maxim):
     options.add_argument('--proxy-server=%s' % PROXY)
     options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument(f'user-agent=' + user_agent)
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -484,7 +484,7 @@ def craigscrawler(maxim):
     options.add_argument('--proxy-server=%s' % PROXY)
     options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument(f'user-agent=' + user_agent)
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -665,7 +665,7 @@ def facebookcrawler(maxim):
     #options.add_argument('--proxy-server=%s' % PROXY)
     #options.add_argument('--headless');
     options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument(f'user-agent=' + user_agent)
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
