@@ -737,9 +737,8 @@ def facebookcrawler(maxim):
 
     driver.get("https://www.facebook.com/marketplace/108276955864187/vehicles/?exact=false")
     timeout = 7
-    #time.sleep(1000)
     try:
-        element_present = EC.presence_of_element_located((By.ID, 'js_1'))
+        element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
         WebDriverWait(driver, timeout).until(element_present)
         print('Page loaded')
     except TimeoutException:
@@ -762,7 +761,7 @@ def facebookcrawler(maxim):
 
 
     urla = []
-    cat = driver.find_element_by_id('js_1')
+    cat = driver.find_element_by_xpath('/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]')
     cat = cat.get_attribute('innerHTML')
     cat = BeautifulSoup(cat)
     n = 0
@@ -795,7 +794,6 @@ def facebookcrawler(maxim):
     for k in range(linkno):
         url = urla[k]
         driver.get(url)
-        driver.save_screenshot('a.png')
         timeout = 2
 
         try:
@@ -811,7 +809,6 @@ def facebookcrawler(maxim):
         row.append(k + 1)
         row.append(url)
         new = 0
-
         try:
             code_soup = driver.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[7]/div[2]/div[2]/div/div/div[2]/div/div/div/div/span/span')
@@ -824,7 +821,7 @@ def facebookcrawler(maxim):
 
         try:
             code_soup = driver.find_element_by_xpath(
-                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[1]/span')
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[1]/div[2]/div/span')
             if code_soup:
                 row.append(code_soup.text)
 
@@ -833,7 +830,7 @@ def facebookcrawler(maxim):
             new = new + 1
         try:
             code_soup = driver.find_element_by_xpath(
-                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/span')
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[1]/div[1]/span')
             if code_soup:
                 row.append(code_soup.text)
 
@@ -859,7 +856,7 @@ def facebookcrawler(maxim):
 
         try:
             code_soup = driver.find_element_by_xpath(
-                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div')
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[2]/div[2]/div/div[1]/div/span')
             if code_soup:
                 body1 = code_soup.text
                 row.append(code_soup.text)
@@ -871,7 +868,7 @@ def facebookcrawler(maxim):
 
         try:
             code_soup = driver.find_element_by_xpath(
-                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[2]/div/span')
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[1]/div[4]/div/span')
             if code_soup:
                 row.append(code_soup.text)
         except:
@@ -929,16 +926,21 @@ def facebookcrawler(maxim):
 
         image = ""
 
-        for q in range(24):
-            try:
-                code_soup = driver.find_element_by_xpath(
-                    '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[1]/div/div[3]/div/div[' + str(
-                        q + 1) + ']/div/div/img')
-                if code_soup:
-                    code_soup = code_soup.get_attribute('src')
-                    image = image + code_soup + ", "
-            except:
-                pass
+        try:
+            code_soup = driver.find_element_by_xpath(
+                '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[1]')
+            if code_soup:
+                code_soup = code_soup.get_attribute('innerHTML')
+                code_soup = BeautifulSoup(code_soup)
+                n = 0
+
+                for link in code_soup.find_all('img'):
+                    link = link.get('src')
+                    urla.append(link)
+                    n += 1
+                    image = image + link + ", "
+        except:
+            pass
 
         row.append(image)
 
@@ -952,5 +954,4 @@ def facebookcrawler(maxim):
         with open('facebook.csv', 'a', newline='', encoding="utf-8") as fil:
             e = csv.writer(fil, delimiter=',')
             e.writerows([row])
-
 main()
