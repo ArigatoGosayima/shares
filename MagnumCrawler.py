@@ -303,7 +303,6 @@ def letgocrawler(maxim):
             with open('letgo.csv', 'a', newline='', encoding="utf-8") as fil:
                 e = csv.writer(fil, delimiter=',')
                 e.writerows([row])
-                print(row)
             driver1.close()
 
 
