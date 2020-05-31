@@ -767,15 +767,18 @@ def facebookcrawler(maxim):
     cat = BeautifulSoup(cat)
     n = 0
 
-    for link in cat.find_all('a'):
+  for link in cat.find_all('a'):
         if n == 0:
             n += 1
             continue
         else:
             if n <= int(maxim):
                 link = link.get('href')
-                urla.append('https://www.facebook.com' + link)
-                n += 1
+                if str(link)[0:18] == '/marketplace/item/':
+                    urla.append('https://www.facebook.com' + link)
+                    n += 1
+                else:
+                    pass
             else:
                 break
     print("Complete")
