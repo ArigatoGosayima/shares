@@ -56,9 +56,8 @@ def letgocrawler(maxim):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless');
-    options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -118,9 +117,8 @@ def letgocrawler(maxim):
             print('On a proxy: ' + PROXY)
             options = webdriver.ChromeOptions()
             options.add_argument('--proxy-server=%s' % PROXY)
-            #options.add_argument('--headless');
-            options.add_argument('--disable-gpu');
-            options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
+            #options.add_argument('--headless')
+            options.add_argument('--disable-gpu')
             options.add_argument('--no-sandbox')
             options.add_argument('--disable-dev-shm-usage')
             driver1 = webdriver.Chrome(options=options)
@@ -275,9 +273,8 @@ def offerupcrawler(maxim):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless');
-    options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -479,9 +476,8 @@ def craigscrawler(maxim):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless');
-    options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
@@ -659,9 +655,8 @@ def facebookcrawler(maxim):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless');
-    options.add_argument('--disable-gpu');
-    options.add_argument(f'user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36')
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     driver = webdriver.Chrome(options=options)
