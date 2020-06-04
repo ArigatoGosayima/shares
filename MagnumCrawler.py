@@ -126,10 +126,9 @@ def letgocrawler(maxim):
         time.sleep(2)
         for page in range(40):
             try:
-                button = driver.find_element_by_xpath('//*[@id="app"]/main/div[3]/div/div[2]/div[6]/div[1]/div[1]/div/div/div[' + str(page + 1) + ']/div/div/div/div[2]/div[1]/p[1]/a')
+                button = driver.find_element_by_xpath('//*[@id="app"]/main/div[3]/div/div[2]/div[6]/div[1]/div[2]/div/div/div[' + str(page + 1) + ']/div/div/div/div[2]/div[1]/p[1]/a')
                 pageList.append(button.get_attribute('href'))
             except:
-                print('not found')
                 continue
         print(len(pageList))
         for k in range(len(pageList)):
@@ -712,6 +711,10 @@ def craigscrawler(maxim):
 
 
 def facebookcrawler(maxim):
+    pcounter = 0
+    with open('magnumproxylist.txt', 'r', encoding='UTF-8') as f:
+        for line in f:
+            pcounter += 1
     counter = 0
     with open('magnummain.txt', 'r', encoding='UTF-8') as f:
         for line in f:
@@ -791,25 +794,51 @@ def facebookcrawler(maxim):
     linkno = len(urla)
     print(linkno)
     for k in range(linkno):
+        if k % 60 == 0 or k == 0:
+            a = randrange(0, pcounter)
+            with open('magnumproxylist.txt', 'r', encoding='UTF-8') as proxylist:
+                for i, line in enumerate(proxylist):
+                    if i == a:
+                        PROXY = line
+                    else:
+                        pass
+            print('On a proxy: ' + PROXY)
+            options = webdriver.ChromeOptions()
+            options.add_argument('--proxy-server=%s' % PROXY)
+            options.add_argument('--headless')
+            options.add_argument('--disable-gpu')
+            options.add_argument('user-agent=' + user_agent)
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            driver1 = webdriver.Chrome(options=options)
         url = urla[k]
-        driver.get(url)
-        timeout = 2
-
+        timeout = 6
         try:
+            driver1.get(url)
             element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
             WebDriverWait(driver, timeout).until(element_present)
             print("Page loaded")
-        except TimeoutException:
-            print("Didnt load")
-            continue
-
-
+        except:
+            try:
+                driver1.get(url)
+                element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
+                WebDriverWait(driver, timeout).until(element_present)
+                print("Page loaded")
+            except TimeoutException:
+                try:
+                    driver1.get(url)
+                    element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
+                    WebDriverWait(driver, timeout).until(element_present)
+                    print("Page loaded")
+                except TimeoutException:
+                    print("Didnt load")
+                    continue
         row = []
         row.append(k + 1)
         row.append(url)
         new = 0
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[7]/div[2]/div[2]/div/div/div[2]/div/div/div/div/span/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -819,7 +848,7 @@ def facebookcrawler(maxim):
             new = new + 1
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[1]/div[2]/div/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -828,7 +857,7 @@ def facebookcrawler(maxim):
             row.append("")
             new = new + 1
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[1]/div[1]/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -838,7 +867,7 @@ def facebookcrawler(maxim):
             new = new + 1
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[1]/div[2]/div/span/a/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -854,7 +883,7 @@ def facebookcrawler(maxim):
         row.append("")
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[2]/div[2]/div/div[1]/div/span')
             if code_soup:
                 body1 = code_soup.text
@@ -866,7 +895,7 @@ def facebookcrawler(maxim):
         row.append("")
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[1]/div[1]/div[4]/div/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -875,7 +904,7 @@ def facebookcrawler(maxim):
             new = new + 1
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[2]/div/div/div[2]/div/div/div/div[2]/span/span/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -884,7 +913,7 @@ def facebookcrawler(maxim):
             new = new + 1
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[3]/div/div/div[2]/div/div/div/div/span/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -893,7 +922,7 @@ def facebookcrawler(maxim):
             new = new + 1
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[4]/div/div/div[2]/div/div/div/div/span/span/a')
             if code_soup:
                 row.append(code_soup.text)
@@ -902,10 +931,10 @@ def facebookcrawler(maxim):
             new = new + 1
 
         try:
-            driver.find_element_by_xpath(
+            driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div/div/div/span/div/span').click()
 
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[5]/div[2]/div/div/div/span')
             if code_soup:
                 row.append(code_soup.text)
@@ -914,7 +943,7 @@ def facebookcrawler(maxim):
             new = new + 1
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[1]/div/div[2]/div[1]/div[6]/div[2]/div[5]/div/div/div[2]/div/div/div/div[1]/span/span')
 
             if code_soup:
@@ -926,7 +955,7 @@ def facebookcrawler(maxim):
         image = ""
 
         try:
-            code_soup = driver.find_element_by_xpath(
+            code_soup = driver1.find_element_by_xpath(
                 '/html/body/div[1]/div[3]/div[1]/div/div/div/div[1]/div/div/div/div/div[2]/div/div/div/div/div[2]/div/div[1]')
             if code_soup:
                 code_soup = code_soup.get_attribute('innerHTML')
