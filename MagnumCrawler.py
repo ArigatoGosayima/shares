@@ -126,9 +126,7 @@ def letgocrawler(maxim):
         pageList = []
         for page in range(40):
             try:
-                button = driver.find_element_by_xpath(
-                    '/html/body/div/main/div[3]/div/div[2]/div[6]/div/div[1]/div[2]/div/div/div[' + str(
-                        page + 1) + ']/div/div/div/div[2]/div[1]/p[1]/a')
+                button = driver.find_element_by_xpath('//*[@id="app"]/main/div[3]/div/div[2]/div[6]/div[1]/div[1]/div/div/div[' + str(page + 1) + ']/div/div/div/div[2]/div[1]/p[1]/a')
                 pageList.append(button.get_attribute('href'))
             except:
                 continue
