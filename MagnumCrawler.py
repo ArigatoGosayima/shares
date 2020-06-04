@@ -57,7 +57,7 @@ def letgocrawler(maxim):
     options = webdriver.ChromeOptions()
     options.add_argument("--start-maximized")
     options.add_argument('--proxy-server=%s' % PROXY)
-    options.add_argument('--headless')
+    #options.add_argument('--headless')
     options.add_argument('--disable-gpu')
     options.add_argument('user-agent=%s' %user_agent)
     options.add_argument('--no-sandbox')
@@ -83,13 +83,12 @@ def letgocrawler(maxim):
 
     sn = 0
 
-    for l in range(int(maxim) + 1):
+    for l in range(int(maxim)):
         try:
             driver.get('https://www.letgo.com/en-us/c/cars/page/' + str(
                 l + 1) + '?distance=100&latitude=30.267153000000015&longitude=-97.7430608')
         except:
             continue
-
         timeout = 6
         try:
             element_present = EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/main/div[2]/header/div/div[4]/button'))
@@ -129,6 +128,7 @@ def letgocrawler(maxim):
                 button = driver.find_element_by_xpath('//*[@id="app"]/main/div[3]/div/div[2]/div[6]/div[1]/div[1]/div/div/div[' + str(page + 1) + ']/div/div/div/div[2]/div[1]/p[1]/a')
                 pageList.append(button.get_attribute('href'))
             except:
+                print('not found')
                 continue
         print(len(pageList))
         for k in range(len(pageList)):
@@ -152,7 +152,7 @@ def letgocrawler(maxim):
             try:
                 driver1.get(url)
             except:
-                c = 0
+                pass
 
             timeout = 2
 
