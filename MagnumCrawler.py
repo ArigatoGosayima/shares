@@ -123,6 +123,7 @@ def letgocrawler(maxim):
                         continue
 
         pageList = []
+        time.sleep(2)
         for page in range(40):
             try:
                 button = driver.find_element_by_xpath('//*[@id="app"]/main/div[3]/div/div[2]/div[6]/div[1]/div[1]/div/div/div[' + str(page + 1) + ']/div/div/div/div[2]/div[1]/p[1]/a')
