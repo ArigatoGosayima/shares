@@ -729,20 +729,16 @@ def facebookcrawler():
                 PROXY = line
             else:
                 pass
-    PROXY = '50.117.102.230:1212'
-    options = Options()
-    options.headless = True
     user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
-    profile = webdriver.FirefoxProfile()
-    profile.set_preference("general.useragent.override", user_agent)
-    proxy = Proxy({
-        'proxyType': ProxyType.MANUAL,
-        'httpProxy': PROXY,
-        'ftpProxy': PROXY,
-        'sslProxy': PROXY,
-        'noProxy': ''  # set this value as desired
-    })
-    driver = webdriver.Firefox(proxy=proxy, options=options, firefox_profile=profile)
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+    options.add_argument('--proxy-server=%s' % PROXY)
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('user-agent=%s' % user_agent)
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    driver = webdriver.Chrome(options=options)
 
     driver.get("https://www.facebook.com/marketplace/108276955864187/vehicles/?sort=CREATION_TIME_DESCEND")
     timeout = 7
@@ -884,46 +880,33 @@ def facebookcrawler():
                     else:
                         pass
             print('On a proxy: ' + PROXY)
-            PROXY = '50.117.102.230:1212'
-            options = Options()
-            options.headless = True
             user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
-            profile = webdriver.FirefoxProfile()
-            profile.set_preference("general.useragent.override", user_agent)
-            proxy = Proxy({
-                'proxyType': ProxyType.MANUAL,
-                'httpProxy': PROXY,
-                'ftpProxy': PROXY,
-                'sslProxy': PROXY,
-                'noProxy': ''  # set this value as desired
-            })
-            driver1 = webdriver.Firefox(proxy=proxy, options=options, firefox_profile=profile)
+            options = webdriver.ChromeOptions()
+            options.add_argument('--proxy-server=%s' % PROXY)
+            options.add_argument('--headless')
+            options.add_argument('--disable-gpu')
+            options.add_argument('user-agent=' + user_agent)
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            driver1 = webdriver.Chrome(options=options)
         url = urla[k]
         timeout = 6
         try:
             driver1.get(url)
-            driver1.execute_script("window.open('');")
-            driver1.switch_to.window(driver.window_handles[0])
             element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
-            WebDriverWait(driver, timeout).until(element_present)
+            WebDriverWait(driver1, timeout).until(element_present)
             print("Page loaded")
         except:
             try:
                 driver1.get(url)
-                driver1.execute_script("window.open('');")
-                driver1.switch_to.window(driver.window_handles[0])
-
                 element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
-                WebDriverWait(driver, timeout).until(element_present)
+                WebDriverWait(driver1, timeout).until(element_present)
                 print("Page loaded")
             except TimeoutException:
                 try:
                     driver1.get(url)
-                    driver1.execute_script("window.open('');")
-                    driver1.switch_to.window(driver.window_handles[0])
-
                     element_present = EC.presence_of_element_located((By.XPATH, 'html/body'))
-                    WebDriverWait(driver, timeout).until(element_present)
+                    WebDriverWait(driver1, timeout).until(element_present)
                     print("Page loaded")
                 except TimeoutException:
                     print("Didnt load")
