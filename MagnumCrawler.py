@@ -374,6 +374,7 @@ def offerupcrawler():
                             '//*[@id="db-item-list"]/div[' + str(j + 1) + ']/a[' + str(
                                 i + 1) + ']')
                         urlarray.append(button.get_attribute('href'))
+                        print(button.get_attribute('href'))
                         print("EX")
 
                     except:
@@ -547,15 +548,15 @@ def craigscrawler():
 
     driver.get("https://houston.craigslist.org/search/cta")
 
-    timeout = 2
+    timeout = 6
 
     try:
-        element_present = EC.presence_of_element_located((By.ID, 'main'))
+        element_present = EC.presence_of_element_located((By.ID, 'html/body'))
         WebDriverWait(driver, timeout).until(element_present)
+        print("Page loaded")
     except TimeoutException:
         print("Timed out waiting for page to load")
-    finally:
-        print("Page loaded")
+
 
     button = driver.find_element_by_xpath('//*[@id="sortable-results"]/ul/li[1]/p/a')
     url = button.get_attribute('href')
@@ -571,7 +572,7 @@ def craigscrawler():
             driver.get(url)
         except:
             pass
-        timeout = 3
+        timeout = 5
 
         try:
             element_present = EC.presence_of_element_located((By.XPATH, '/html/body'))
