@@ -12,10 +12,6 @@ options.add_argument('--headless')
 options.add_argument('user-agent=%s' % user_agent)
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
-chrome_prefs = {}
-options.experimental_options["prefs"] = chrome_prefs
-chrome_prefs["profile.default_content_settings"] = {"images": 2}
-chrome_prefs["profile.managed_default_content_settings"] = {"images": 2}
 driver = webdriver.Chrome(options=options)
 
 driver.get('https://www.avito.ma/fr/marrakech/electorm%C3%A9nager_et_vaisselle/climat_9000_41397868.htm')
